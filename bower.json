@@ -1,0 +1,20 @@
+{
+  "name": "ai_lr2",
+  "version": "0.0.0",
+  "authors": [
+    "Sergey Kibish <sergey.kibish@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.2",
+    "mathjs": "~1.4.0",
+    "nvd3": "~1.7.1"
+  }
+}

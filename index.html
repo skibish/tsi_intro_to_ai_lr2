@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link href="bower_components/nvd3/build/nv.d3.min.css" rel="stylesheet" type="text/css">
+    <title>Neural Networks LR2</title>
+
+    <style>
+        text {
+            font: 12px sans-serif;
+        }
+
+        svg {
+            display: block;
+        }
+
+        html, body, #chart1, svg {
+            height: 200px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="container" style="margin-top: 20px;">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Convergence</h3>
+                </div>
+                <div class="panel-body">
+                    <div id="chart1"></div>
+                </div>
+            </div>
+
+            <table class="table">
+                <tr>
+                    <th>Neuron</th>
+                    <th>w0</th>
+                    <th>w1</th>
+                    <th>w2</th>
+                    <th>w3</th>
+                    <th>w4</th>
+                </tr>
+                <tr>
+                    <td>#1</td>
+                    <td id="w00"></td>
+                    <td id="w01"></td>
+                    <td id="w02"></td>
+                    <td id="w03"></td>
+                    <td id="w04"></td>
+                </tr>
+                <tr>
+                    <td>#2</td>
+                    <td id="w10"></td>
+                    <td id="w11"></td>
+                    <td id="w12"></td>
+                    <td id="w13"></td>
+                    <td id="w14"></td>
+                </tr>
+            </table>
+
+            <table class="table">
+                <tr>
+                    <th>Neuron</th>
+                    <th>w0</th>
+                    <th>w1</th>
+                    <th>w2</th>
+                    <th>w3</th>
+                    <th>w4</th>
+                </tr>
+                <tr>
+                    <td>#1</td>
+                    <td id="w00x"><input class="form-control" name="w00x"></td>
+                    <td id="w01x"><input class="form-control" name="w01x"></td>
+                    <td id="w02x"><input class="form-control" name="w02x"></td>
+                    <td id="w03x"><input class="form-control" name="w03x"></td>
+                    <td id="w04x"><input class="form-control" name="w04x"></td>
+                </tr>
+                <tr>
+                    <td>#2</td>
+                    <td id="w10x"><input class="form-control" name="w10x"></td>
+                    <td id="w11x"><input class="form-control" name="w11x"></td>
+                    <td id="w12x"><input class="form-control" name="w12x"></td>
+                    <td id="w13x"><input class="form-control" name="w13x"></td>
+                    <td id="w14x"><input class="form-control" name="w14x"></td>
+                </tr>
+            </table>
+
+            <button type="button" class="btn btn-success btn-md" id="update-coefficients">Update coefficients</button>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Learn</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="alpha">Learning coefficient</label>
+                        <input type="number" name="alpha" id="alpha" class="form-control" value="1">
+                    </div>
+
+                    <button type="button" class="btn btn-md btn-warning" id="run"> RUN</button>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Give me answer!</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label>Doors</label>
+                        <input name="doors" class="form-control" value="2">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Avg. Fuel</label>
+                        <input name="fuel" class="form-control" value="14.0">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Seats</label>
+                        <input name="seats" class="form-control" value="2">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Weight</label>
+                        <input name="weight" class="form-control" value="3.0">
+                    </div>
+
+                    <button type="button" class="btn btn-md btn-primary" id="now"> NOW!</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="bower_components/d3/d3.min.js" charset="utf-8"></script>
+<script src="bower_components/nvd3/build/nv.d3.min.js"></script>
+<script src="bower_components/mathjs/dist/math.min.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/nn.js"></script>
+<script>
+    var n = new NN();
+
+    setup();
+
+    var restart = function () {
+        return new NN();
+    };
+
+    $('#update-coefficients').on('click', function () {
+        updateCoefficients();
+    });
+
+    $('#now').on('click', function () {
+        var answ = n.expluatate(getAnswer());
+
+        alert(answ[0] + ' ' + answ[1]);
+    });
+
+    $('#run').on('click', function () {
+        var alpha = $('#alpha').val();
+        $('#chart1 svg').remove();
+        n = restart();
+
+        n.w0[0] = parseFloat($('#w00').text());
+        n.w0[1] = parseFloat($('#w01').text());
+        n.w0[2] = parseFloat($('#w02').text());
+        n.w0[3] = parseFloat($('#w03').text());
+        n.w0[4] = parseFloat($('#w04').text());
+        n.w1[0] = parseFloat($('#w10').text());
+        n.w1[1] = parseFloat($('#w11').text());
+        n.w1[2] = parseFloat($('#w12').text());
+        n.w1[3] = parseFloat($('#w13').text());
+        n.w1[4] = parseFloat($('#w14').text());
+
+        n.learningCurve = alpha;
+        n.learn();
+
+        getCoefficientsAfterLearning();
+
+        var chart;
+        nv.addGraph(function () {
+            chart = nv.models.lineChart()
+                    .options({
+                        transitionDuration: 300,
+                        useInteractiveGuideline: true
+                    })
+            ;
+            // chart sub-models (ie. xAxis, yAxis, etc) when accessed directly, return themselves, not the parent chart, so need to chain separately
+            chart.xAxis
+                    .axisLabel("Era")
+                    .tickFormat(d3.format(',.1f'))
+                    .staggerLabels(true)
+            ;
+            chart.yAxis
+                    .axisLabel('Sum of errors')
+                    .tickFormat(d3.format(',.0f'))
+            ;
+            d3.select('#chart1').append('svg')
+                    .datum(convergence())
+                    .call(chart);
+            nv.utils.windowResize(chart.update);
+            return chart;
+        });
+        function convergence() {
+            var err = [];
+            for (var i = 1; i < n.errors.length; i++) {
+                err.push({x: i, y: n.errors[i]});
+            }
+            return [
+                {
+                    values: err,
+                    key: "Convergence",
+                    color: "#ff7f0e"
+                }
+            ];
+        }
+    });
+
+</script>
+</body>
+</html>
